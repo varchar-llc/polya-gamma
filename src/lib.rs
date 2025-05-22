@@ -40,7 +40,6 @@
 //! See [LICENSE-MIT](LICENSE-MIT) and [LICENSE-APACHE](LICENSE-APACHE) for details.
 
 use rand::{Rng, SeedableRng, thread_rng};
-use rand_chacha::ChaCha8Rng;
 use rng::RngDraw;
 use statrs::distribution::{Exp, Gamma, InverseGamma, Normal, Uniform};
 use std::f64::consts::PI;
@@ -237,7 +236,7 @@ impl PolyaGamma {
             .into_par_iter()
             .zip(seeds.into_par_iter())
             .flat_map(|(chunk, chunk_seed)| {
-                let mut rng = ChaCha8Rng::seed_from_u64(chunk_seed);
+                let mut rng = R::seed_from_u64(chunk_seed);
                 chunk
                     .iter()
                     .map(|&c_val| self.draw_internal(&mut rng, b, c_val))

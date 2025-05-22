@@ -1,12 +1,11 @@
 use criterion::{Criterion, criterion_group, criterion_main};
 use polya_gamma::PolyaGamma;
-use rand::SeedableRng;
-use rand_chacha::ChaCha8Rng;
+use rand::{SeedableRng, rngs::StdRng};
 use std::time::Duration;
 
 fn bench_polya_gamma(cr: &mut Criterion) {
     let mut pg = PolyaGamma::new(1.0);
-    let mut rng = ChaCha8Rng::seed_from_u64(42);
+    let mut rng = StdRng::seed_from_u64(42);
 
     // Fixed number of samples to match R benchmark
     let ns = [10000];
