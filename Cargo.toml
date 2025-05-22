@@ -1,6 +1,6 @@
 [package]
 name = "polya-gamma"
-version = "0.5.0"
+version = "0.5.2"
 edition = "2024"
 authors = ["Daniel Lyng <lyng@varchar.one>"]
 license = "MIT OR Apache-2.0"
@@ -10,12 +10,12 @@ homepage = "https://github.com/varchar-llc/polya-gamma"
 [features]
 default = ["rayon"]
 rayon = ["dep:rayon"]
-regression = ["dep:ndarray", "dep:ndarray-linalg", "dep:mini-mcmc"]
+regression = ["dep:ndarray", "dep:ndarray-linalg", "dep:mini-mcmc", "dep:rand_chacha"]
 
 [dependencies]
 nalgebra = { version = "0.32", default-features = false, features = ["std"] }
 rand = "0.8.5"
-rand_chacha = "0.3.1"
+rand_chacha = {version = "0.3.1", optional = true}
 rayon = { version = "1.10.0", optional = true }
 statrs = "0.18.0"
 mini-mcmc = {version = "0.5.2", optional = true}

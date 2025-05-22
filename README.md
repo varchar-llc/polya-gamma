@@ -11,14 +11,14 @@ Run `cargo add polya-gamma` or add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-polya-gamma = "0.5"
+polya-gamma = "0.5.2"
 ```
 
 Regression features require additional dependencies:
 
 ```toml
 [dependencies]
-polya-gamma = { version = "0.5", features = ["regression"] }
+polya-gamma = { version = "0.5.2", features = ["regression"] }
 ```
 
 
@@ -30,26 +30,27 @@ use rand::{SeedableRng, rngs::StdRng};
 
 fn main() {
     // Create a new Polya-Gamma sampler
-    let mut pg = PolyaGamma::new();
+    let mut pg = PolyaGamma::new(1.0);
     
     // Create a random number generator
     let mut rng = StdRng::seed_from_u64(42);
     
     // Draw a sample from PG(1.0, 0.5)
-    let sample = pg.draw(1.0, 0.5, &mut rng);
+    let sample = pg.draw(&mut rng, 0.5);
     println!("Sample from PG(1.0, 0.5): {}", sample);
     
     // Draw multiple samples in parallel (requires rayon feature)
-    let samples = pg.draw_vec_par(1.0, 0.5, 1000);
+    let samples = pg.draw_vec_par(&mut rng, &[0.5; 1000]);
     println!("Drew {} samples in parallel", samples.len());
 }
-```
  
 ## Features
 
 - **Exact Sampling**: Implements Devroye's algorithm for exact sampling from PG(1, c)
 - **Parallel Processing**: Optional Rayon support for generating multiple samples in parallel
-- **Bayesian Logistic Regression**: Built-in Gibbs sampler for Bayesian logistic regression
+- **Bayesian Regression Models**: Built-in Gibbs samplers for:
+    - Logistic Regression (`GibbsLogit`)
+    - Negative Binomial Regression (`GibbsNegativeBinomial`)
 - **Documentation**: Comprehensive API documentation with examples
 
 ## Usage Examples
@@ -60,29 +61,45 @@ fn main() {
 use polya_gamma::PolyaGamma;
 use rand::thread_rng;
 
-let mut pg = PolyaGamma::new();
+let mut pg = PolyaGamma::new(1.0);
 let mut rng = thread_rng();
 
 // Draw a single sample
-let sample = pg.draw(1.0, 0.5, &mut rng);
+let sample = pg.draw(&mut rng, 0.5);
 
 // Draw multiple samples
-let samples = pg.draw_vec(1.0, 0.5, 100, &mut rng);
+let samples = pg.draw_vec(&mut rng, &[0.5; 100]);
 ```
 
 ### Bayesian Logistic Regression
 
 ```rust
-use polya_gamma::logistic::GibbsLogReg;
-use nalgebra::{DMatrix, DVector};
+use polya_gamma::regression::GibbsLogit;
+use ndarray::array; // Assuming ndarray is used for x and y
+use rand::SeedableRng;
 
-// Create some example data
-let x = DMatrix::from_row_slice(3, 2, &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]);
-let y = DVector::from_vec(vec![0.0, 1.0, 0.0]);
+// Example data (replace with actual data)
+let x_data = array![[1.0, 0.5], [1.0, -0.5], [1.0, 1.0], [1.0, -1.0]];
+let y_data = array![1.0, 0.0, 1.0, 0.0];
+let prior_variance = 100.0;
+let n_chains = 4;
+let seed = 42;
 
-// Create and run the Gibbs sampler
-let model = GibbsLogReg::new(x, y);
-let samples = model.sample(1000, 100, 10); // 1000 samples, 100 burn-in, thinning=10
+// It's assumed x_data includes an intercept column if desired.
+let model = GibbsLogit::new(
+    x_data.clone(), 
+    y_data.clone(), 
+    prior_variance, 
+    n_chains, 
+    rand_chacha::ChaCha8Rng::seed_from_u64(seed)
+);
+let results = model.run(1000, 5000).unwrap(); // 1000 burn-in, 5000 samples
+
+// Process and print results (e.g., posterior means)
+// The `results` struct (LogisticResults) contains `beta_posterior_mean` and `raw_samples`
+println!("Posterior Mean Beta: {:?}", results.beta_posterior_mean);
+
+// For Negative Binomial regression with GibbsNegativeBinomial, the usage pattern is similar.
 ```
 
 ## Performance

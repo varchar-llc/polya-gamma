@@ -1,3 +1,4 @@
+#![cfg(feature = "regression")]
 //! Bayesian regression models using Gibbs sampling with Polya-Gamma augmentation.
 //!
 //! This module provides implementations of various Bayesian regression models that use
@@ -11,7 +12,6 @@
 //!
 //! # Examples
 //! See the examples directory for complete usage examples of each model.
-
 pub use logit::GibbsLogit;
 pub use negative_binomial::GibbsNegativeBinomial;
 

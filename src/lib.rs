@@ -9,9 +9,11 @@
 //!   - Draws samples from the PG(b, c) distribution using different strategies depending on the value of `b`.
 //!   - High-performance, high-accuracy sampling.
 //!
-//! - **Bayesian Logistic Regression:**
-//!   - Implements a Gibbs sampler using PG augmentation for fully-conjugate updates of regression coefficients.
-//!   - See [`logistic::GibbsLogReg`] for details.
+//! - **Bayesian Regression:**
+//!   - Implements Gibbs samplers using PG augmentation for fully-conjugate updates of regression coefficients.
+//!   - For logistic regression, see [`regression::GibbsLogit`].
+//!   - For negative binomial regression (count data), see [`regression::GibbsNegativeBinomial`].
+//!   - These are available under the `regression` feature flag.
 //!
 //! ## Mathematical Background
 //!
@@ -31,10 +33,11 @@
 //! let sample = pg.draw(&mut StdRng::seed_from_u64(0), 1.0);
 //! ```
 //!
-//! For Bayesian logistic regression, see [`logistic::GibbsLogReg`] and the examples folder.
-//!
+//! For examples of Bayesian regression models, see the documentation for the [`regression`] module and the specific model structs like [`regression::GibbsLogit`].
+//! The `examples` directory in the repository also contains runnable examples.
 //! ## License
-//! See [LICENSE](LICENSE) for details.
+//! This crate is dual-licensed under the MIT OR Apache-2.0 licenses.
+//! See [LICENSE-MIT](LICENSE-MIT) and [LICENSE-APACHE](LICENSE-APACHE) for details.
 
 use rand::{Rng, SeedableRng, thread_rng};
 use rand_chacha::ChaCha8Rng;
@@ -44,9 +47,6 @@ use std::f64::consts::PI;
 
 #[cfg(feature = "rayon")]
 use rayon::prelude::*;
-
-// #[cfg(feature = "regression")]
-// pub use logistic_mcmc::LogisticPGChain;
 
 const PI_SQ: f64 = std::f64::consts::PI * std::f64::consts::PI;
 const PI2_SQ_RECIP: f64 = 1.0 / (2.0 * PI_SQ);
@@ -367,7 +367,6 @@ impl PolyaGamma {
 }
 
 mod devroye;
-#[cfg(feature = "regression")]
 pub mod regression;
 pub(crate) mod rng;
 
