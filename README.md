@@ -43,7 +43,7 @@ fn main() {
     let samples = pg.draw_vec_par(&mut rng, &[0.5; 1000]);
     println!("Drew {} samples in parallel", samples.len());
 }
- 
+```
 ## Features
 
 - **Exact Sampling**: Implements Devroye's algorithm for exact sampling from PG(1, c)
