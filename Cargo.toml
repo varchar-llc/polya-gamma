@@ -5,7 +5,7 @@ edition = "2024"
 authors = ["Daniel Lyng <lyng@varchar.one>"]
 license = "MIT OR Apache-2.0"
 description = "Efficient sampler for Polya-Gamma random variates"
-homepage = "https://github.com/varchar-llc/polya-gamma"
+repository = "https://github.com/varchar-llc/polya-gamma"
 
 [features]
 default = ["rayon"]
